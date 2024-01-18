@@ -1,0 +1,25 @@
+import pandas as pd
+from fuzzywuzzy import fuzz, process
+
+# Sample data
+data = {
+    'Column1': ["041 PROPERTIES", "1 EARTCH REAL ESTATE", "1 STEP PROPERTIES", "111 REAL ESTATE", "121 PROPERTIES",
+                "121 PROPERTIES", "18 BRICKS HOLIDAY HOMES RENTAL L. L. C.", "18 BRICKS RE", "18 BRICKS REAL ESTATE",
+                "188 REAL ESTATE", "1926 REAL ESTATE", "1966 REAL ESTATE", "21ST CENTURY PROPERTIES",
+                "21ST CENTURY PROPERTIES", "25NORTH REAL ESTATE", "2F PROPERTIES"],
+    'Column2': ["du0002", "SF3", "du0003", "du0004", "SF4", "du0005", "SF5", "SF6", "SF7", "du0006", "du0007", "du0008",
+                "SF8", "du3655", "du0009", "SF9"]
+}
+
+df = pd.DataFrame(data)
+
+# Fuzzy matching function
+def fuzzy_match(row, choices):
+    match, score = process.extractOne(row['Column1'], choices)
+    return pd.Series([match, score], index=['Matched_Column2', 'Match_Score'])
+
+# Apply fuzzy matching to each row
+df[['Matched_Column2', 'Match_Score']] = df.apply(fuzzy_match, choices=df['Column2'], axis=1)
+
+# Display the results
+print(df)
